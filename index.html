@@ -45,6 +45,11 @@
     </div>
 
     <script>
+        if (!/Chrome/.test(navigator.userAgent) && !/CriOS/.test(navigator.userAgent)) {
+            const externalUrl = "https://qr-scanner-client.onrender.com";
+            window.open(externalUrl, "_blank");
+            return
+        }
         function isAndroid() {
             return /Android/i.test(navigator.userAgent);
         }
