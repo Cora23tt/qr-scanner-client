@@ -14,7 +14,8 @@
 </head>
 
 <body>
-    <div class="container mt-5"><button class="btn btn-primary" style="display: none;" id="installApp">Install</button></div>
+    <div class="container mt-5"><button class="btn btn-primary" style="display: none;" id="installApp">Install</button>
+    </div>
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-6 offset-md-3">
@@ -99,7 +100,7 @@
                 html5QrCode.stop().then((ignore) => {
                     setTimeout(function () {
                         startCameraById(CameraId);
-                    }, 3000);
+                    }, 2000);
                     return
                 });
             }
@@ -143,6 +144,22 @@
                 });
         });
 
+        function handleBlur() {
+            // stopCamera();
+            if (html5QrCode.getState() == 2 || html5QrCode.getState() == 3) {
+                html5QrCode.stop().then((ignore) => {
+                    setTimeout(function () {
+                        console.log('user unfocused, camera stoped');
+                    }, 2000);
+                    return
+                });
+            }
+        }
+        function handleFocus() {
+            handleCameraSelection();
+        }
+        window.addEventListener('blur', handleBlur);
+        window.addEventListener('focus', handleFocus);
 
     </script>
 </body>
