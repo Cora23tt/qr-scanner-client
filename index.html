@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <title>QR-scanner</title>
+    <script src="./node_modules/html5-qrcode/html5-qrcode.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5"><button class="btn btn-primary" id="installApp">Install</button></div>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="form-group">
+                    <label for="cameraSelect">Выберите камеру:</label>
+                    <select class="form-control" id="cameraSelect"></select>
+                    <div class="alert alert-danger my-3" id="permissionDeniedMessage" style="display: none;">
+                        Невозможно получить доступ к камере. Разрешите использование камеры и перезагрузите страницу.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div id="reader" style="width: 100%;"></div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6 offset-md-3">
+                <div class="alert alert-success" id="result" style="display: none;"></div>
+                <button class="btn btn-primary" id="sendButton" style="display: none;">Отправить в API</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            deferredPrompt = e;
+        });
+
+        const installApp = document.getElementById('installApp');
+        installApp.addEventListener('click', async () => {
+            if (deferredPrompt !== null) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    deferredPrompt = null;
+                }
+            }
+        });
+        const cameraSelect = document.getElementById("cameraSelect");
+        const permissionDeniedMessage = document.getElementById("permissionDeniedMessage");
+        const html5QrCode = new Html5Qrcode("reader");
+
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                devices.forEach(device => {
+                    const option = document.createElement("option");
+                    option.value = device.id;
+                    option.text = device.label;
+                    cameraSelect.appendChild(option);
+                });
+                cameraSelect.addEventListener("change", handleCameraSelection);
+                handleCameraSelection();
+            }
+        }).catch(err => {
+            permissionDeniedMessage.style.display = "block";
+            permissionDeniedMessage.innerHTML = err;
+        });
+
+        function onScanSuccess(decodedText, decodedResult) {
+            const resultElement = document.getElementById("result");
+            resultElement.textContent = `Code matched = ${decodedText}`;
+            resultElement.style.display = "block";
+            document.getElementById("sendButton").style.display = "block";
+        }
+
+        function handleCameraSelection() {
+            const CameraId = cameraSelect.value;
+            if (html5QrCode.getState() == 2 || html5QrCode.getState() == 3) {
+                html5QrCode.stop().then((ignore) => {
+                    setTimeout(function () {
+                        startCameraById(CameraId);
+                    }, 3000);
+                    return
+                });
+            }
+            startCameraById(CameraId);
+        }
+
+        function startCameraById(CameraId) {
+            html5QrCode.start(CameraId,
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                (decodedText, decodedResult) => {
+                    onScanSuccess(decodedText, decodedResult);
+                },
+                (errorMessage) => {
+                    console.log(errorMessage)
+                })
+                .catch((err) => {
+                    alert(err);
+                });
+        }
+
+        document.getElementById("sendButton").addEventListener("click", function () {
+            const resultElement = document.getElementById("result");
+            const decodedText = resultElement.textContent.replace("Code matched = ", "").trim();
+
+            const formData = new FormData();
+            formData.append("string", decodedText);
+
+            fetch("https://onec-qr-scanner.onrender.com/save-string", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Результат отправки в API:", data);
+                })
+                .catch(error => {
+                    console.error("Ошибка при отправке в API:", error);
+                });
+        });
+
+
+    </script>
+</body>
+
+</html>
