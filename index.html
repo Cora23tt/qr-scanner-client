@@ -14,6 +14,7 @@
 </head>
 
 <body>
+    <p id="text-message"></p>
     <div class="container mt-5"><button class="btn btn-primary" style="display: none;" id="installApp">Install</button>
     </div>
     <div class="container mt-5">
@@ -45,11 +46,25 @@
     </div>
 
     <script>
-        if (!/Chrome/.test(navigator.userAgent) && !/CriOS/.test(navigator.userAgent)) {
-            const externalUrl = "https://qr-scanner-client.onrender.com";
-            window.open(externalUrl, "_blank");
-            return
-        }
+        const browserName = (function () {
+            const agent = navigator.userAgent.toLowerCase();
+            if (agent.indexOf("firefox") !== -1) return "Firefox";
+            if (agent.indexOf("chrome") !== -1) return "Chrome";
+            if (agent.indexOf("safari") !== -1) return "Safari";
+            if (agent.indexOf("msie") !== -1 || agent.indexOf("trident") !== -1) return "Internet Explorer";
+            return "Unknown";
+        })();
+
+        const browserVersion = (function () {
+            const version = navigator.appVersion.toLowerCase();
+            if (browserName === "Internet Explorer") {
+                return (version.split("rv:")[1] || "").split(")")[0];
+            } else {
+                return (version.split(browserName.toLowerCase() + "/")[1] || "").split(" ")[0];
+            }
+        })();
+        document.getElementById("text-message").innerHTML = navigator.userAgent + '?' + browserName + '?' + browserVersion;
+
         function isAndroid() {
             return /Android/i.test(navigator.userAgent);
         }
