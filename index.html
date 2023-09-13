@@ -144,22 +144,20 @@
                 });
         });
 
-        function handleBlur() {
-            // stopCamera();
-            if (html5QrCode.getState() == 2 || html5QrCode.getState() == 3) {
-                html5QrCode.stop().then((ignore) => {
-                    setTimeout(function () {
-                        console.log('user unfocused, camera stoped');
-                    }, 2000);
-                    return
-                });
+        document.addEventListener("visibilitychange", function () {
+            if (document.hidden) {
+                if (html5QrCode.getState() == 2 || html5QrCode.getState() == 3) {
+                    html5QrCode.stop().then((ignore) => {
+                        setTimeout(function () {
+                            console.log('user unfocused, camera stoped');
+                        }, 2000);
+                        return
+                    });
+                }
+            } else {
+                handleCameraSelection();
             }
-        }
-        function handleFocus() {
-            handleCameraSelection();
-        }
-        window.addEventListener('blur', handleBlur);
-        window.addEventListener('focus', handleFocus);
+        });
 
     </script>
 </body>
