@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <div class="container mt-5"><button class="btn btn-primary" id="installApp">Install</button></div>
+    <div class="container mt-5"><button class="btn btn-primary" style="display: none;" id="installApp">Install</button></div>
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-6 offset-md-3">
@@ -44,6 +44,13 @@
     </div>
 
     <script>
+        function isAndroid() {
+            return /Android/i.test(navigator.userAgent);
+        }
+        const button = document.getElementById("installApp");
+        if (isAndroid()) {
+            button.style.display = "block";
+        }
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             deferredPrompt = e;
