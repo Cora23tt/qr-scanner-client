@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="container my-5">
+    <div class="container mb-2 mt-3">
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <div id="reader" style="width: 100%;"></div>
@@ -38,7 +38,7 @@
         </div>
         <div class="row mt-3">
             <div class="col-md-6 offset-md-3">
-                <table class="mb-4 table table-success table-striped" id="scannedTable">
+                <table class="mb-3 table table-success table-striped" id="scannedTable">
                     <thead>
                         <tr>
                             <th>Список отсканированных</th>
@@ -49,9 +49,13 @@
                     </tbody>
                 </table>
 
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#clearTableModal">
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" id="clearModalTrigger"
+                    data-bs-target="#clearTableModal">
                     Очистить
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" id="sendTableModalTrigger"
+                    data-bs-target="#sendTableModal">
+                    Отправить
                 </button>
 
                 <!-- Modal -->
@@ -66,19 +70,38 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="clearButton">Да</button>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                                    id="clearButton">Да</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <button class="btn btn-primary" id="sendButton">Отправить</button>
+                <div class="modal fade" id="sendTableModal" tabindex="-1" aria-labelledby="sendTableModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="sendTableModalLabel">Отправить список?</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                                    id="sendButton">Да</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
     <script>
-
+        const clearModalTriggerBtn = document.getElementById('clearModalTrigger');
+        const sendTableModalTriggerBtn = document.getElementById('sendTableModalTrigger');
         const cameraSelect = document.getElementById("cameraSelect");
         const permissionDeniedMessage = document.getElementById("permissionDeniedMessage");
         const html5QrCode = new Html5Qrcode("reader");
@@ -87,7 +110,15 @@
         const agreeCheckbox = document.getElementById("agreeCheckbox");
         const sendButton = document.getElementById("sendButton");
 
-        clearButton.addEventListener("click", function () {
+        clearModalTriggerBtn.addEventListener("click", () => {
+            document.getElementById('clearTableModal').focus();
+        });
+
+        sendTableModalTriggerBtn.addEventListener("click", () => {
+            document.getElementById('sendTableModal').focus();
+        });
+
+        clearButton.addEventListener("click", () => {
             clearTable();
         });
 
@@ -153,22 +184,42 @@
         }
 
         sendButton.addEventListener("click", function () {
-            const resultElement = document.getElementById("result");
-            const decodedText = resultElement.textContent.replace("Code matched = ", "").trim();
+            const jsonData = [];
+            const tableBody = document.getElementById("tbody");
+            const credentials = `${"hgt"}:${"1"}`;
+            const base64Credentials = btoa(credentials);
 
-            const formData = new FormData();
-            formData.append("string", decodedText);
+            const rows = tableBody.getElementsByTagName("tr");
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const cell = row.getElementsByTagName("td")[0];
+                if (cell) {
+                    const textQR = cell.textContent.trim();
+                    jsonData.push({ "textQR": textQR });
+                }
+            }
 
-            fetch("https://onec-qr-scanner.onrender.com/save-string", {
+            fetch("http://195.158.24.168:8080/hgt/hs/tovar/post_invent/", {
                 method: "POST",
-                body: formData
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Basic ${base64Credentials}`,
+                    "Accept": "*/*",
+                    "Connection":"keep-alive"
+                },
+                body: JSON.stringify(jsonData)
             })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Результат отправки в API:", data);
+                .then(response => {
+                    if (response.status === 200) {
+                        clearTable();
+                        permissionDeniedMessage.style.display = "none";
+                    } else {
+                        throw new Error(`Error: ${response.status}`);
+                    }
                 })
                 .catch(error => {
-                    console.error("Ошибка при отправке в API:", error);
+                    permissionDeniedMessage.style.display = "block";
+                    permissionDeniedMessage.innerHTML = error;
                 });
         });
 
