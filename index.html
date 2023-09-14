@@ -199,16 +199,18 @@
                 }
             }
 
-            fetch("http://195.158.24.168:8080/hgt/hs/tovar/post_invent/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Basic ${base64Credentials}`,
-                    "Accept": "*/*",
-                    "Connection":"keep-alive"
-                },
-                body: JSON.stringify(jsonData)
-            })
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Authorization", `Basic ${base64Credentials}`);
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: JSON.stringify(jsonData),
+                redirect: 'follow'
+            };
+
+            fetch("http://195.158.24.168:8080/hgt/hs/tovar/post_invent/", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
                         clearTable();
@@ -221,6 +223,27 @@
                     permissionDeniedMessage.style.display = "block";
                     permissionDeniedMessage.innerHTML = error;
                 });
+
+            // fetch("http://195.158.24.168:8080/hgt/hs/tovar/post_invent/", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": `Basic ${base64Credentials}`
+            //     },
+            //     body: JSON.stringify(jsonData)
+            // })
+            //     .then(response => {
+            //         if (response.status === 200) {
+            //             clearTable();
+            //             permissionDeniedMessage.style.display = "none";
+            //         } else {
+            //             throw new Error(`Error: ${response.status}`);
+            //         }
+            //     })
+            //     .catch(error => {
+            //         permissionDeniedMessage.style.display = "block";
+            //         permissionDeniedMessage.innerHTML = error;
+            //     });
         });
 
         document.addEventListener("visibilitychange", function () {
