@@ -14,9 +14,7 @@
 </head>
 
 <body>
-    <p id="text-message"></p>
-    <div class="container mt-5"><button class="btn btn-primary" style="display: none;" id="installApp">Install</button>
-    </div>
+
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-6 offset-md-3">
@@ -39,57 +37,27 @@
         </div>
         <div class="row mt-3">
             <div class="col-md-6 offset-md-3">
-                <div class="alert alert-success" id="result" style="display: none;"></div>
-                <button class="btn btn-primary" id="sendButton" style="display: none;">Отправить в API</button>
+                <table class="mb-4 table table-success table-striped" id="scannedTable">
+                    <thead>
+                        <tr>
+                            <th>Список отсканированных</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Scanned elements will be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary" id="sendButton">Отправить</button>
             </div>
         </div>
     </div>
 
     <script>
-        const browserName = (function () {
-            const agent = navigator.userAgent.toLowerCase();
-            if (agent.indexOf("firefox") !== -1) return "Firefox";
-            if (agent.indexOf("chrome") !== -1) return "Chrome";
-            if (agent.indexOf("safari") !== -1) return "Safari";
-            if (agent.indexOf("msie") !== -1 || agent.indexOf("trident") !== -1) return "Internet Explorer";
-            return "Unknown";
-        })();
 
-        const browserVersion = (function () {
-            const version = navigator.appVersion.toLowerCase();
-            if (browserName === "Internet Explorer") {
-                return (version.split("rv:")[1] || "").split(")")[0];
-            } else {
-                return (version.split(browserName.toLowerCase() + "/")[1] || "").split(" ")[0];
-            }
-        })();
-        document.getElementById("text-message").innerHTML = navigator.userAgent + '?' + browserName + '?' + browserVersion;
-
-        function isAndroid() {
-            return /Android/i.test(navigator.userAgent);
-        }
-        const button = document.getElementById("installApp");
-        if (isAndroid()) {
-            button.style.display = "block";
-        }
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            deferredPrompt = e;
-        });
-
-        const installApp = document.getElementById('installApp');
-        installApp.addEventListener('click', async () => {
-            if (deferredPrompt !== null) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    deferredPrompt = null;
-                }
-            }
-        });
         const cameraSelect = document.getElementById("cameraSelect");
         const permissionDeniedMessage = document.getElementById("permissionDeniedMessage");
         const html5QrCode = new Html5Qrcode("reader");
+        const scannedStrings = [];
 
         Html5Qrcode.getCameras().then(devices => {
             if (devices && devices.length) {
@@ -108,10 +76,13 @@
         });
 
         function onScanSuccess(decodedText, decodedResult) {
-            const resultElement = document.getElementById("result");
-            resultElement.textContent = `Code matched = ${decodedText}`;
-            resultElement.style.display = "block";
-            document.getElementById("sendButton").style.display = "block";
+            if (!scannedStrings.includes(decodedText)) {
+                const scannedTable = document.getElementById("scannedTable");
+                const newRow = scannedTable.insertRow();
+                const cell = newRow.insertCell();
+                cell.textContent = decodedText;
+                scannedStrings.push(decodedText);
+            }
         }
 
         function handleCameraSelection() {
