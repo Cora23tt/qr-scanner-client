@@ -214,13 +214,13 @@
 
             var requestOptions = {
                 method: 'POST',
-                mode: 'no-cors',
+                // mode: 'no-cors',
                 headers: myHeaders,
                 body: JSON.stringify(jsonData),
                 redirect: 'follow',
             };
 
-            fetch("http://195.158.24.168:8080/hgt/hs/tovar/post_invent/", requestOptions)
+            fetch("http://127.0.0.1:8082/qr-scann-process", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
                         clearTable();
