@@ -210,12 +210,14 @@
 
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Authorization", "Basic YWRtaW46MTIz");
 
             var requestOptions = {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: myHeaders,
                 body: JSON.stringify(jsonData),
-                redirect: 'follow'
+                redirect: 'follow',
             };
 
             fetch("http://195.158.24.168:8080/hgt/hs/tovar/post_invent/", requestOptions)
