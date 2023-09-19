@@ -19,13 +19,20 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-6 offset-md-3">
+
+                <div class="alert alert-success" role="alert" id="sended-successfuly" style="display: none;">
+                    Успешено отправлено
+                </div>
+
                 <div class="form-group">
                     <label for="cameraSelect">Выберите камеру:</label>
                     <select class="form-control" id="cameraSelect"></select>
+
                     <div class="alert alert-danger my-3" id="permissionDeniedMessage" style="display: none;">
                         Невозможно получить доступ к камере. Разрешите использование камеры и перезагрузите страницу.
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -95,6 +102,8 @@
                     </div>
                 </div>
 
+
+
             </div>
         </div>
     </div>
@@ -109,6 +118,7 @@
         const clearButton = document.getElementById("clearButton");
         const agreeCheckbox = document.getElementById("agreeCheckbox");
         const sendButton = document.getElementById("sendButton");
+        const sendedSuccess = document.getElementById("sended-successfuly");
 
         clearModalTriggerBtn.addEventListener("click", () => {
             document.getElementById('clearTableModal').focus();
@@ -186,10 +196,8 @@
         sendButton.addEventListener("click", function () {
             const jsonData = [];
             const tableBody = document.getElementById("tbody");
-            const credentials = `${"hgt"}:${"1"}`;
-            const base64Credentials = btoa(credentials);
-
             const rows = tableBody.getElementsByTagName("tr");
+
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const cell = row.getElementsByTagName("td")[0];
@@ -201,7 +209,6 @@
 
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
-            myHeaders.append("Authorization", `Basic ${base64Credentials}`);
 
             var requestOptions = {
                 method: 'POST',
@@ -215,6 +222,8 @@
                     if (response.status === 200) {
                         clearTable();
                         permissionDeniedMessage.style.display = "none";
+                        sendedSuccess.style.display = 'block';
+                        setTimeout(() => { alertElement.style.display = "none"; }, 3000);
                     } else {
                         throw new Error(`Error: ${response.status}`);
                     }
@@ -223,27 +232,6 @@
                     permissionDeniedMessage.style.display = "block";
                     permissionDeniedMessage.innerHTML = error;
                 });
-
-            // fetch("http://195.158.24.168:8080/hgt/hs/tovar/post_invent/", {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         "Authorization": `Basic ${base64Credentials}`
-            //     },
-            //     body: JSON.stringify(jsonData)
-            // })
-            //     .then(response => {
-            //         if (response.status === 200) {
-            //             clearTable();
-            //             permissionDeniedMessage.style.display = "none";
-            //         } else {
-            //             throw new Error(`Error: ${response.status}`);
-            //         }
-            //     })
-            //     .catch(error => {
-            //         permissionDeniedMessage.style.display = "block";
-            //         permissionDeniedMessage.innerHTML = error;
-            //     });
         });
 
         document.addEventListener("visibilitychange", function () {
