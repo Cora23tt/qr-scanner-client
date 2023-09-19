@@ -220,7 +220,7 @@
                 redirect: 'follow',
             };
 
-            fetch("http://127.0.0.1:8082/qr-scann-process", requestOptions)
+            fetch("https://qr-scanner-middleware.onrender.com/qr-scann-process", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
                         clearTable();
