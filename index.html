@@ -121,11 +121,11 @@
         const sendedSuccess = document.getElementById("sended-successfuly");
 
         clearModalTriggerBtn.addEventListener("click", () => {
-            document.getElementById('clearTableModal').focus();
+            document.getElementById('clearTableModal').scrollIntoView({ behavior: "smooth" });
         });
 
         sendTableModalTriggerBtn.addEventListener("click", () => {
-            document.getElementById('sendTableModal').focus();
+            document.getElementById('sendTableModal').scrollIntoView({ behavior: "smooth" });
         });
 
         clearButton.addEventListener("click", () => {
@@ -151,6 +151,7 @@
         }).catch(err => {
             permissionDeniedMessage.style.display = "block";
             permissionDeniedMessage.innerHTML = err;
+            permissionDeniedMessage.scrollIntoView({ behavior: "smooth" });
         });
 
         function onScanSuccess(decodedText, decodedResult) {
@@ -223,6 +224,7 @@
                         clearTable();
                         permissionDeniedMessage.style.display = "none";
                         sendedSuccess.style.display = 'block';
+                        sendedSuccess.scrollIntoView({ behavior: "smooth" });
                         setTimeout(() => { alertElement.style.display = "none"; }, 3000);
                     } else {
                         throw new Error(`Error: ${response.status}`);
@@ -230,6 +232,7 @@
                 })
                 .catch(error => {
                     permissionDeniedMessage.style.display = "block";
+                    permissionDeniedMessage.scrollIntoView({ behavior: "smooth" });
                     permissionDeniedMessage.innerHTML = error;
                 });
         });
