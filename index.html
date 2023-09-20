@@ -210,19 +210,17 @@
 
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
-            myHeaders.append("Authorization", "Basic YWRtaW46MTIz");
 
             var requestOptions = {
                 method: 'POST',
-                // mode: 'no-cors',
                 headers: myHeaders,
                 body: JSON.stringify(jsonData),
                 redirect: 'follow',
             };
 
-            fetch("https://qr-scanner-middleware.onrender.com/qr-scann-process", requestOptions)
+            fetch("https://qr-scanner-middleware-v2.onrender.com/scanns", requestOptions)
                 .then(response => {
-                    if (response.status === 200) {
+                    if (response.status === 201) {
                         clearTable();
                         permissionDeniedMessage.style.display = "none";
                         sendedSuccess.style.display = 'block';
