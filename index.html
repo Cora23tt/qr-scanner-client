@@ -204,7 +204,7 @@
                 const cell = row.getElementsByTagName("td")[0];
                 if (cell) {
                     const textQR = cell.textContent.trim();
-                    jsonData.push({ "textQR": textQR });
+                    jsonData.push(textQR);
                 }
             }
 
@@ -236,6 +236,7 @@
                     permissionDeniedMessage.innerHTML = error;
                 });
         });
+
 
         document.addEventListener("visibilitychange", function () {
             if (document.hidden) {
