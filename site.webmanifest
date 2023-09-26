@@ -1,7 +1,7 @@
 {
-    "name": "QR Scanner for 1C",
-    "short_name": "QR1C",
-    "description": "this is a simple pwa app for scanning qr codes and send to 1C",
+    "name": "HududGaz Inventory Fix",
+    "short_name": "FixInvent",
+    "description": "",
     "start_url": "/",
     "icons": [
         {

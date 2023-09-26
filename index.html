@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
-    <title>QR-scanner</title>
+    <title>FixInvent</title>
     <script src="./node_modules/html5-qrcode/html5-qrcode.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    <div class="container" id="loadingContainer" style="display: none;">
+    <div class="container justify-content-center align-items-center" id="loadingContainer" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.7); z-index: 1051;">
         <div class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
@@ -222,7 +222,7 @@
         }
 
         sendButton.addEventListener("click", function () {
-            loadingContainer.style.display = "block";
+            loadingContainer.className = "container justify-content-center align-items-center d-flex";
             const jsonData = [];
             const tableBody = document.getElementById("tbody");
             const rows = tableBody.getElementsByTagName("tr");
@@ -246,12 +246,12 @@
                 redirect: 'follow',
             };
 
-            fetch("https://qr-scanner-middleware-v2.onrender.com/scanns", requestOptions)
+            fetch("https://qr-scanner-middleware-v2.onrender.com/scans", requestOptions)
                 .then(response => {
                     if (response.status === 201) {
                         clearTable();
                         permissionDeniedMessage.style.display = "none";
-                        loadingContainer.style.display = "none";
+                        loadingContainer.className = "container justify-content-center align-items-center";
                         sendedSuccess.style.display = 'block';
                         sendedSuccess.scrollIntoView({ behavior: "smooth" });
                         setTimeout(() => { sendedSuccess.style.display = "none"; }, 3000);
