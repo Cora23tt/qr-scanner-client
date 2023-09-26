@@ -15,7 +15,25 @@
     "display": "standalone",
     "screenshots": [
         {
-            "src": "screenshot.jpg",
+            "src": "screenshots/screenshot.png",
+            "sizes": "1280x720",
+            "type": "image/jpg",
+            "platform": "wide"
+        },
+        {
+            "src": "screenshots/screenshot_1.png",
+            "sizes": "1280x720",
+            "type": "image/jpg",
+            "platform": "wide"
+        },
+        {
+            "src": "screenshots/screenshot_2.png",
+            "sizes": "1280x720",
+            "type": "image/jpg",
+            "platform": "wide"
+        },
+        {
+            "src": "screenshots/screenshot_3.png",
             "sizes": "1280x720",
             "type": "image/jpg",
             "platform": "wide"
